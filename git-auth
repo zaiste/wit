@@ -1,0 +1,20 @@
+#! /bin/sh
+
+# git auth : authenticate on Github
+#
+# Released under the MIT License.
+
+function help() {
+    echo "git auth -- authenticate at GitHub"
+}
+
+if [ "$1" ]
+then
+    user=$(git remote -v | grep origin | head -n1 | awk '{print $2}' | sed 's/.*\://' | sed 's/\/.*\.git//')
+
+    token=$(curl -u "$user" -d '{"scopes": ["repo"]}' https://api.github.com/authorizations | jq -r '.token')
+
+    $(echo "Authorization: token $token" > $HOME/.wit/auth_token)
+else
+    help;
+fi

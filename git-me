@@ -1,0 +1,18 @@
+#! /bin/sh
+
+# git me : show information about authenticated user
+#
+# Released under the MIT License.
+
+function help() {
+    echo "git me -- it's me!"
+}
+
+if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
+    help
+    exit
+fi
+
+token=$(cat $HOME/.wit/auth_token)
+
+curl -H "$token" https://api.github.com/user

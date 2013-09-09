@@ -1,0 +1,22 @@
+#! /bin/sh
+
+# git req [pull request title] : issue a Github pull request
+#
+# Released under the MIT License.
+
+function help() {
+    echo "git req [pull request title] -- issue a pull request"
+}
+
+if [ "$1" ]
+then
+    token=$(cat $HOME/.wit/auth_token)
+    current_branch=$(git rev-parse --abbrev-ref HEAD)
+    base_repo=$(git remote -v | grep upstream | head -n1 | awk '{print $2}' | sed 's/.*\://' | sed 's/\.git//')
+    user=$(git remote -v | grep origin | head -n1 | awk '{print $2}' | sed 's/.*\://' | sed 's/\/.*\.git//')
+
+    pr_link=$(curl -s -H "$token" -d "{\"title\": \"$1\", \"head\": \"${user}:${current_branch}\", \"base\": \"master\"}" -H "Content-Type: application/json" "https://api.github.com/repos/$base_repo/pulls" | jq '.html_url')
+    echo $pr_link
+else
+    help;
+fi
